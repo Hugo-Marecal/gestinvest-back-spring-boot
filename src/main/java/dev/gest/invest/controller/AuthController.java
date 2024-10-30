@@ -1,8 +1,9 @@
 package dev.gest.invest.controller;
 
-import dev.gest.invest.model.User;
+import dev.gest.invest.dto.RegisterUserDto;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +27,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> register(@RequestBody User user) {
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterUserDto userDto) {
         try {
-
-            User registeredUser = authService.signup(user);
+            authService.signup(userDto);
 
             ApiResponse response = new ApiResponse("success", "User registered successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
