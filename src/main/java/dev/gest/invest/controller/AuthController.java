@@ -1,6 +1,8 @@
 package dev.gest.invest.controller;
 
+import dev.gest.invest.dto.LoginUserDto;
 import dev.gest.invest.dto.RegisterUserDto;
+import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AuthService;
 import jakarta.validation.Valid;
@@ -27,9 +29,9 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterUserDto userDto) {
+    public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterUserDto registerUserDto) {
         try {
-            authService.signup(userDto);
+            authService.signup(registerUserDto);
 
             ApiResponse response = new ApiResponse("success", "User registered successfully");
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -38,5 +40,25 @@ public class AuthController {
             ApiResponse response = new ApiResponse("error", "User registration failed: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginUserDto loginUserDto) {
+        try {
+            User authenticatedUser = authService.authenticate(loginUserDto);
+
+//            String jwtToken = jwtService.generateToken(authenticatedUser);
+
+            ApiResponse response = new ApiResponse("success", "User successfully logged in");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            ApiResponse response = new ApiResponse("error", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/secure")
+    public String secureRoute() {
+        return "Success";
     }
 }

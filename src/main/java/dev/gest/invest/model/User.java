@@ -20,12 +20,14 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(unique = true, nullable = false)
     private String email;
     private String last_name;
     private String first_name;
+    @Column(nullable = false)
     private String password;
     private String token;
-    private Boolean verified;
+    private Boolean verified = false;
 
     public User(String email, String password) {
         this.email = email;
