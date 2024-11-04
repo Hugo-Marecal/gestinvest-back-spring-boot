@@ -60,8 +60,9 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/secure")
+    @GetMapping("/dashboard")
     public String secureRoute() {
-        return "Success";
+        return "Dashboard";
     }
+
 }
