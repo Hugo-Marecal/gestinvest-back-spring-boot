@@ -59,10 +59,5 @@ public class AuthController {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
-
-    @GetMapping("/dashboard")
-    public String secureRoute() {
-        return "Dashboard";
-    }
-
+    
 }
