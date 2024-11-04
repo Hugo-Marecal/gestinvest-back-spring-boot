@@ -5,6 +5,7 @@ import dev.gest.invest.dto.RegisterUserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AuthService;
+import dev.gest.invest.services.JwtService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final JwtService jwtService;
 
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, JwtService jwtService) {
         this.authService = authService;
+        this.jwtService = jwtService;
     }
 
     @GetMapping("/")
@@ -47,9 +50,9 @@ public class AuthController {
         try {
             User authenticatedUser = authService.authenticate(loginUserDto);
 
-//            String jwtToken = jwtService.generateToken(authenticatedUser);
+            String jwtToken = jwtService.generateToken(authenticatedUser.getUsername());
 
-            ApiResponse response = new ApiResponse("success", "User successfully logged in");
+            ApiResponse response = new ApiResponse("success", "User successfully logged in", jwtToken);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             ApiResponse response = new ApiResponse("error", e.getMessage());
