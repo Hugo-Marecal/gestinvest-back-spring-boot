@@ -7,8 +7,7 @@ import dev.gest.invest.model.User;
 import dev.gest.invest.repository.AssetRepository;
 import dev.gest.invest.repository.UserRepository;
 import dev.gest.invest.services.DashboardService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,13 +30,9 @@ public class DashboardController {
     }
 
     @GetMapping("/")
-    public PortfolioData getDashboardInfo() {
-        Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
-
-        User user = userRepository.findByEmail(currentUser.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
+    public PortfolioData getDashboardInfo(@AuthenticationPrincipal User user) {
         UUID userId = user.getId();
+        
         List<InvestLineDto> allLines = dashboardService.getInvestLinesByUser(userId);
 
         return dashboardService.getAssetUserInformation(allLines);
