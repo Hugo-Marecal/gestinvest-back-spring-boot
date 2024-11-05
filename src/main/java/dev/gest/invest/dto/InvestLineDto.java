@@ -12,7 +12,7 @@ public class InvestLineDto {
     private String portfolio_name;
     private BigDecimal price_invest;
     private LocalDate invest_date;
-    private BigDecimal fees;
+    private double fees;
     private BigDecimal asset_number;
     private String trading_operation_type;
     private String category_name;
@@ -20,7 +20,18 @@ public class InvestLineDto {
     private String symbol;
     private BigDecimal asset_price;
 
-    public InvestLineDto(String portfolio_name, BigDecimal price_invest, LocalDate invest_date, BigDecimal fees, BigDecimal asset_number, String trading_operation_type, String category_name, String asset_name, String symbol, BigDecimal asset_price) {
+    public InvestLineDto(
+            String portfolio_name,
+            BigDecimal price_invest,
+            LocalDate invest_date,
+            double fees,
+            BigDecimal asset_number,
+            String trading_operation_type,
+            String category_name,
+            String asset_name,
+            String symbol,
+            BigDecimal asset_price
+    ) {
         this.portfolio_name = portfolio_name;
         this.price_invest = price_invest;
         this.invest_date = invest_date;

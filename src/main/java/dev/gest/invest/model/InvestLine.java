@@ -20,7 +20,7 @@ import java.util.UUID;
                         @ColumnResult(name = "portfolio_name", type = String.class),
                         @ColumnResult(name = "price_invest", type = BigDecimal.class),
                         @ColumnResult(name = "invest_date", type = LocalDate.class),
-                        @ColumnResult(name = "fees", type = BigDecimal.class),
+                        @ColumnResult(name = "fees", type = double.class),
                         @ColumnResult(name = "asset_number", type = BigDecimal.class),
                         @ColumnResult(name = "trading_operation_type", type = String.class),
                         @ColumnResult(name = "category_name", type = String.class),
@@ -37,6 +37,6 @@ public class InvestLine {
     private UUID id;
     private BigDecimal price;
     private LocalDate date;
-    private BigDecimal fees;
+    private double fees;
     private BigDecimal asset_number;
 }

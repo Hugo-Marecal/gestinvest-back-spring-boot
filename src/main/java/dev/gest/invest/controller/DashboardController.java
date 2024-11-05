@@ -1,6 +1,7 @@
 package dev.gest.invest.controller;
 
 import dev.gest.invest.dto.InvestLineDto;
+import dev.gest.invest.dto.PortfolioData;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.UserRepository;
 import dev.gest.invest.services.DashboardService;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -25,18 +25,15 @@ public class DashboardController {
     }
 
     @GetMapping("/dashboard")
-    public List<InvestLineDto> getDashboardInfo() {
+    public PortfolioData getDashboardInfo() {
         Authentication currentUser = SecurityContextHolder.getContext().getAuthentication();
 
-        Optional<User> user = userRepository.findByEmail(currentUser.getName());
+        User user = userRepository.findByEmail(currentUser.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.isEmpty()) {
-            throw new RuntimeException("user not found");
-        }
+        UUID userId = user.getId();
+        List<InvestLineDto> allLines = dashboardService.getInvestLinesByUser(userId);
 
-        UUID userId = user.get().getId();
-
-        return dashboardService.getInvestLinesByUser(userId);
-
+        return dashboardService.getAssetUserInformation(allLines);
     }
 }
