@@ -35,8 +35,26 @@ public class InvestLine {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false, precision = 20, scale = 8)
     private BigDecimal price;
+
+    @Column(nullable = false)
     private LocalDate date;
+
+    @Column(nullable = false)
     private double fees;
+
+    @Column(nullable = false, precision = 20, scale = 8)
     private BigDecimal asset_number;
+
+
+    @Column(name = "asset_id", nullable = false)
+    private UUID asset;
+
+    @Column(name = "portfolio_id", nullable = false)
+    private UUID portfolio;
+
+    @Column(name = "trading_operation_type_id", nullable = false)
+    private UUID tradingOperationType;
 }
