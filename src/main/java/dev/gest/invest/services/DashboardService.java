@@ -6,6 +6,8 @@ import dev.gest.invest.dto.PortfolioData;
 import dev.gest.invest.repository.InvestLineRepositoryCustom;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,7 +43,7 @@ public class DashboardService {
             String symbol = line.getSymbol();
             String category = line.getCategory_name();
             String transactionType = line.getTrading_operation_type();
-            double totalEstimate = truncateToTwoDecimals(buyQuantity * assetPrice);
+            double totalEstimate = buyQuantity * assetPrice;
 
             double totalInvestLineWithoutFees = buyQuantity * priceInvest;
             double totalInvestLineWithFees = totalInvestLineWithoutFees - totalInvestLineWithoutFees * (feesPercent / 100);
@@ -50,9 +52,9 @@ public class DashboardService {
                 totalInvestment += totalInvestLineWithFees;
                 AssetUserInformationDto existingAsset = findAssetBySymbol(assetUserInformationList, symbol);
                 if (existingAsset != null) {
-                    existingAsset.setQuantity(existingAsset.getQuantity() + buyQuantity);
+                    existingAsset.setQuantity(truncateNumber(existingAsset.getQuantity() + buyQuantity));
                     existingAsset.setTotalInvestByAsset(existingAsset.getTotalInvestByAsset() + totalInvestLineWithFees);
-                    existingAsset.setTotalEstimatedValueByAsset(existingAsset.getTotalEstimatedValueByAsset() + totalEstimate);
+                    existingAsset.setTotalEstimatedValueByAsset(truncateToTwoDecimals(existingAsset.getTotalEstimatedValueByAsset() + totalEstimate));
                     existingAsset.setAssetCategory(category);
                 } else {
                     AssetUserInformationDto asset = new AssetUserInformationDto();
@@ -69,9 +71,9 @@ public class DashboardService {
                 totalInvestment -= totalInvestLineWithFees;
                 AssetUserInformationDto existingAsset = findAssetBySymbol(assetUserInformationList, symbol);
                 if (existingAsset != null) {
-                    existingAsset.setQuantity(existingAsset.getQuantity() - buyQuantity);
+                    existingAsset.setQuantity(truncateNumber(existingAsset.getQuantity() - buyQuantity));
                     existingAsset.setTotalInvestByAsset(existingAsset.getTotalInvestByAsset() - totalInvestLineWithFees);
-                    existingAsset.setTotalEstimatedValueByAsset(existingAsset.getTotalEstimatedValueByAsset() - totalEstimate);
+                    existingAsset.setTotalEstimatedValueByAsset(truncateToTwoDecimals(existingAsset.getTotalEstimatedValueByAsset() - totalEstimate));
                 }
             }
         }
@@ -131,11 +133,33 @@ public class DashboardService {
         return list.stream().filter(asset -> asset.getSymbol().equals(symbol)).findFirst().orElse(null);
     }
 
+    // 2-decimal truncation
     private double truncateToTwoDecimals(double value) {
-        return Math.round(value * 100.0) / 100.0;
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(2, RoundingMode.DOWN);
+        return bd.doubleValue();
     }
 
-    private double truncateNumber(double value) {
-        return Math.round(value * 100.0) / 100.0;
+    public static double truncateNumber(double value) {
+        BigDecimal nombre = BigDecimal.valueOf(value);
+
+        // Check if the number begins with “0” in its integer part
+        if (nombre.compareTo(BigDecimal.ONE) < 0 && nombre.compareTo(BigDecimal.ZERO) >= 0) {
+            // Truncate to 8 decimal places if the number is less than 1 and greater than or equal to 0
+            nombre = nombre.setScale(8, RoundingMode.DOWN);
+            return nombre.doubleValue();
+        }
+        // 2-decimal truncation
+        nombre = nombre.setScale(2, RoundingMode.DOWN);
+        return nombre.doubleValue();
     }
+
+    // 8-decimal truncation
+    private double truncateToEightDecimals(double value) {
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(8, RoundingMode.DOWN);
+        return bd.doubleValue();
+    }
+
+
 }
