@@ -153,13 +153,4 @@ public class DashboardService {
         nombre = nombre.setScale(2, RoundingMode.DOWN);
         return nombre.doubleValue();
     }
-
-    // 8-decimal truncation
-    private double truncateToEightDecimals(double value) {
-        BigDecimal bd = BigDecimal.valueOf(value);
-        bd = bd.setScale(8, RoundingMode.DOWN);
-        return bd.doubleValue();
-    }
-
-
 }
