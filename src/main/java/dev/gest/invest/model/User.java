@@ -29,9 +29,10 @@ public class User implements UserDetails {
     private String token;
     private Boolean verified = false;
 
-    public User(String email, String password) {
+    public User(String email, String password, String token) {
         this.email = email;
         this.password = password;
+        this.token = token;
     }
 
     public User() {

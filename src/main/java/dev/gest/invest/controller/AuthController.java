@@ -34,7 +34,7 @@ public class AuthController {
         try {
             authService.signup(registerUserDto);
 
-            ApiResponse response = new ApiResponse("success", "User registered successfully");
+            ApiResponse response = new ApiResponse("success", "User registered successfully, please verify your email");
             return new ResponseEntity<>(response, HttpStatus.OK);
 
         } catch (Exception e) {
