@@ -9,7 +9,6 @@ import dev.gest.invest.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +49,7 @@ public class AuthService {
         Optional<User> alreadyExistingUser = userRepo.findByEmail(input.getEmail());
 
         if (alreadyExistingUser.isPresent()) {
-            throw new RuntimeException("Email already use");
+            throw new IllegalArgumentException("Email already use");
         }
 
         String token = jwtService.generateToken(input.getEmail());
@@ -59,7 +58,7 @@ public class AuthService {
 
         User createdUser = userRepo.save(user);
         if (createdUser.getId() == null) {
-            throw new RuntimeException("Error, creation failed");
+            throw new IllegalArgumentException("Error, creation failed");
         }
 
         sendVerificationEmail(createdUser, token);
@@ -72,25 +71,21 @@ public class AuthService {
     }
 
     public User authenticate(LoginUserDto input) {
-        try {
-            User user = userRepo.findByEmail(input.getEmail())
-                    .orElseThrow(() -> new RuntimeException("Authentication failed"));
+        User user = userRepo.findByEmail(input.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Authentication failed"));
 
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            input.getEmail(),
-                            input.getPassword()
-                    )
-            );
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        input.getEmail(),
+                        input.getPassword()
+                )
+        );
 
-            if (!user.getVerified()) {
-                throw new RuntimeException("Account not verified. Please verify your account");
-            }
-
-            return user;
-        } catch (AuthenticationException e) {
-            throw new RuntimeException("Authentication failed");
+        if (!user.getVerified()) {
+            throw new IllegalArgumentException("Account not verified. Please verify your account");
         }
+
+        return user;
     }
 
     public void sendVerificationEmail(User user, String token) {
@@ -109,18 +104,18 @@ public class AuthService {
     public boolean verify(String token) {
         String userEmail = jwtService.extractUsername(token);
         if (userEmail == null) {
-            throw new RuntimeException("Invalid token");
+            throw new IllegalArgumentException("Invalid token");
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
         boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
         if (!isTokenValid) {
-            throw new RuntimeException("Invalid token");
+            throw new IllegalArgumentException("Invalid token");
         }
 
         User user = userRepo.findByEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         if (user.getVerified()) {
             return false;

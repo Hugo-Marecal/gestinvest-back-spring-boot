@@ -36,52 +36,35 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterUserDto registerUserDto) {
-        try {
-            authService.signup(registerUserDto);
+        authService.signup(registerUserDto);
 
-            ApiResponse response = new ApiResponse("success", "User registered successfully, please verify your email");
-            return new ResponseEntity<>(response, HttpStatus.OK);
-
-        } catch (Exception e) {
-            ApiResponse response = new ApiResponse("error", "User registration failed: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
+        ApiResponse response = new ApiResponse("success", "User registered successfully, please verify your email");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> login(@Valid @RequestBody LoginUserDto loginUserDto) {
-        try {
-            User authenticatedUser = authService.authenticate(loginUserDto);
+        User authenticatedUser = authService.authenticate(loginUserDto);
 
-            String jwtToken = jwtService.generateToken(authenticatedUser.getUsername());
+        String jwtToken = jwtService.generateToken(authenticatedUser.getUsername());
 
-            ApiResponse response = new ApiResponse("success", "User successfully logged in", jwtToken);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            ApiResponse response = new ApiResponse("error", e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-        }
+        ApiResponse response = new ApiResponse("success", "User successfully logged in", jwtToken);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/verify/{token}")
-    public ResponseEntity<ApiResponse> verifyEmail(@PathVariable String token, HttpServletResponse response) throws IOException {
-        try {
-            boolean isVerified = authService.verify(token);
+    public void verifyEmail(@PathVariable String token, HttpServletResponse response) throws IOException {
+        boolean isVerified = authService.verify(token);
 
-            //Encode message for client can read it and display it
-            String successMessage = URLEncoder.encode("Email vérifié avec succès, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
-            String errorMessage = URLEncoder.encode("Email déjà vérifié, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
+        //Encode message for client can read it and display it
+        String successMessage = URLEncoder.encode("Email vérifié avec succès, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
+        String errorMessage = URLEncoder.encode("Email déjà vérifié, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
 
-            if (isVerified) {
-                response.sendRedirect("http://localhost:5173/?successMessage=" + successMessage);
-            } else {
-                response.sendRedirect("http://localhost:5173/?errorMessage=" + errorMessage);
-            }
-        } catch (Exception e) {
-            ApiResponse apiResponse = new ApiResponse("error", e.getMessage());
-            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        if (isVerified) {
+            response.sendRedirect("http://localhost:5173/?successMessage=" + successMessage);
+        } else {
+            response.sendRedirect("http://localhost:5173/?errorMessage=" + errorMessage);
         }
-        return null;
     }
 
 }
