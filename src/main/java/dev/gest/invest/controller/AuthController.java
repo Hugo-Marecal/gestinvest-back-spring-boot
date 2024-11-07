@@ -6,10 +6,15 @@ import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AuthService;
 import dev.gest.invest.services.JwtService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 
 @RestController
@@ -56,6 +61,27 @@ public class AuthController {
             ApiResponse response = new ApiResponse("error", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/verify/{token}")
+    public ResponseEntity<ApiResponse> verifyEmail(@PathVariable String token, HttpServletResponse response) throws IOException {
+        try {
+            boolean isVerified = authService.verify(token);
+
+            //Encode message for client can read it and display it
+            String successMessage = URLEncoder.encode("Email vérifié avec succès, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
+            String errorMessage = URLEncoder.encode("Email déjà vérifié, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
+
+            if (isVerified) {
+                response.sendRedirect("http://localhost:5173/?successMessage=" + successMessage);
+            } else {
+                response.sendRedirect("http://localhost:5173/?errorMessage=" + errorMessage);
+            }
+        } catch (Exception e) {
+            ApiResponse apiResponse = new ApiResponse("error", e.getMessage());
+            return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        }
+        return null;
     }
 
 }

@@ -47,7 +47,7 @@ public class DashboardController {
 
     @PostMapping("/buy")
     public ResponseEntity<String> addBuyInvestmentLine(@AuthenticationPrincipal User user, @RequestBody @Valid AddLineDto addLineDto) {
-        
+
         UUID userId = user.getId();
         String tradingOperationType = "buy";
 
@@ -57,7 +57,7 @@ public class DashboardController {
     }
 
     @PostMapping("/sell")
-    public ResponseEntity<String> addSellInvestmentLine(@AuthenticationPrincipal User user, @RequestBody AddLineDto addLineDto) {
+    public ResponseEntity<String> addSellInvestmentLine(@AuthenticationPrincipal User user, @RequestBody @Valid AddLineDto addLineDto) {
 
         UUID userId = user.getId();
         String tradingOperationType = "sell";

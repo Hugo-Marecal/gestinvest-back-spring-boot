@@ -33,7 +33,12 @@ public class SecurityConfiguration {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/api", "/api/auth/signup", "/api/auth/login").permitAll()
+                        .requestMatchers(
+                                "/api",
+                                "/api/auth/signup",
+                                "/api/auth/login",
+                                "/api/auth/verify/{token}"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())

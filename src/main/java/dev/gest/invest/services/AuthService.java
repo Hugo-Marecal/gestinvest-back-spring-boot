@@ -10,6 +10,8 @@ import jakarta.mail.MessagingException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final PortfolioRepository portfolioRepository;
     private final EmailService emailService;
+    private final UserDetailsService userDetailsService;
 
     public AuthService(
             UserRepository userRepo,
@@ -31,7 +34,8 @@ public class AuthService {
             AuthenticationManager authenticationManager,
             JwtService jwtService,
             PortfolioRepository portfolioRepository,
-            EmailService emailService
+            EmailService emailService,
+            UserDetailsService userDetailsService
     ) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
@@ -39,6 +43,7 @@ public class AuthService {
         this.jwtService = jwtService;
         this.portfolioRepository = portfolioRepository;
         this.emailService = emailService;
+        this.userDetailsService = userDetailsService;
     }
 
     public User signup(RegisterUserDto input) {
@@ -99,5 +104,32 @@ public class AuthService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean verify(String token) {
+        String userEmail = jwtService.extractUsername(token);
+        if (userEmail == null) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+
+        boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
+        if (!isTokenValid) {
+            throw new RuntimeException("Invalid token");
+        }
+
+        User user = userRepo.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getVerified()) {
+            return false;
+        }
+
+        user.setVerified(true);
+        user.setToken(null);
+        userRepo.save(user);
+
+        return true;
     }
 }
