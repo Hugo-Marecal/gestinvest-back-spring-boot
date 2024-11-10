@@ -14,9 +14,12 @@ import java.util.UUID;
 @Repository
 public interface AssetRepository extends JpaRepository<Asset, UUID> {
 
-    @Query("SELECT a.name AS assetName, c.name AS categoryName FROM Asset a JOIN a.category c")
+    @Query(value = "SELECT asset.name AS asset_name, category.name AS category_name FROM asset JOIN category ON asset.category_id = category.id", nativeQuery = true)
     List<AssetCategoryProjection> findAllAssetNamesAndCategoryNames();
 
     @Query("SELECT a.id FROM Asset a WHERE a.name = :name")
     Optional<UUID> findAssetIdByName(@Param("name") String name);
+
+    @Query("SELECT a.symbol FROM Asset a WHERE a.category = :categoryId")
+    List<String> findSymbolByCategory(int categoryId);
 }

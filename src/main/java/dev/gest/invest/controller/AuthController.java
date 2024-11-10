@@ -5,16 +5,21 @@ import dev.gest.invest.dto.RegisterUserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AuthService;
+import dev.gest.invest.services.CryptoPriceService;
+import dev.gest.invest.services.GroupSymbolsService;
 import dev.gest.invest.services.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -23,15 +28,21 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtService jwtService;
+    private final GroupSymbolsService groupSymbolsService;
+    private final CryptoPriceService cryptoPriceService;
 
-    public AuthController(AuthService authService, JwtService jwtService) {
+    public AuthController(AuthService authService, JwtService jwtService, GroupSymbolsService groupSymbolsService, CryptoPriceService cryptoPriceService) {
         this.authService = authService;
         this.jwtService = jwtService;
+        this.groupSymbolsService = groupSymbolsService;
+        this.cryptoPriceService = cryptoPriceService;
     }
 
     @GetMapping("/")
-    public String welcome() {
-        return "Welcome from the API";
+    // test if method for cron is working
+    public Mono<Map<String, Double>> welcome() {
+        List<String> groups = groupSymbolsService.getSymbolsInGroups(1, 60);
+        return cryptoPriceService.fetchPricesForGroupAsync(groups);
     }
 
     @PostMapping("/signup")

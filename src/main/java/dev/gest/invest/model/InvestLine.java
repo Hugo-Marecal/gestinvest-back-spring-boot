@@ -48,7 +48,6 @@ public class InvestLine {
     @Column(nullable = false, precision = 20, scale = 8)
     private BigDecimal asset_number;
 
-
     @Column(name = "asset_id", nullable = false)
     private UUID asset;
 

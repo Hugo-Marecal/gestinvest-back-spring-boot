@@ -9,11 +9,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = "asset")
 @Getter
 @Setter
 public class Asset {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "name", nullable = false, unique = true, length = 50)
@@ -28,9 +29,8 @@ public class Asset {
     @Column(name = "local", length = 8)
     private String local;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(name = "category_id", nullable = false)
+    private int category;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

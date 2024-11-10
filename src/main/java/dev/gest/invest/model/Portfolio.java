@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
+@Table(name = "portfolio")
 @Getter
 @Setter
 public class Portfolio {
