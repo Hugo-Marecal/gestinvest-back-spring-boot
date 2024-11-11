@@ -1,12 +1,15 @@
 package dev.gest.invest.services;
 
 import dev.gest.invest.dto.CryptoPriceResponseDto;
+import dev.gest.invest.repository.AssetRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.List;
 import java.util.Map;
@@ -19,10 +22,14 @@ public class CryptoPriceService {
     @Value("${coinmarketcap.api.key}")
     private String apiKey;
 
+    private final GroupSymbolsService groupSymbolsService;
+    private final AssetRepository assetRepository;
     private final WebClient webClient;
 
-    public CryptoPriceService(WebClient.Builder webClientBuilder) {
+    public CryptoPriceService(WebClient.Builder webClientBuilder, GroupSymbolsService groupSymbolsService, AssetRepository assetRepository) {
         this.webClient = webClientBuilder.baseUrl("https://pro-api.coinmarketcap.com/v1").build();
+        this.groupSymbolsService = groupSymbolsService;
+        this.assetRepository = assetRepository;
     }
 
     public Mono<Map<String, Double>> fetchPricesForGroupAsync(List<String> group) {
@@ -46,5 +53,25 @@ public class CryptoPriceService {
                     log.error("Error fetching prices for group {}", group, e);
                     return Mono.empty();
                 });
+    }
+
+    public Mono<Void> updateCryptoPrices(int categoryId, int groupSize) {
+        List<String> groups = groupSymbolsService.getSymbolsInGroups(categoryId, groupSize);
+
+        return Flux.fromIterable(groups)
+                .flatMap(group -> {
+                    return fetchPricesForGroupAsync(groups);
+                })
+                .flatMap(prices -> Flux.fromIterable(prices.entrySet()))
+                .flatMap(entry -> {
+                    String symbol = entry.getKey();
+                    Double price = entry.getValue();
+
+                    return Mono.fromCallable(() -> assetRepository.updatePriceBySymbol(price, symbol))
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .doOnSuccess(count -> log.info("Mise à jour du prix pour {}: {}", symbol, price))
+                            .doOnError(e -> log.error("Erreur lors de la mise à jour de {}: {}", symbol, e));
+                })
+                .then();
     }
 }

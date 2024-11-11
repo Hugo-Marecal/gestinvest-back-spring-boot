@@ -37,7 +37,7 @@ INSERT INTO "asset" ("name", "symbol", "category_id") VALUES
 ('Ethereum Classic', 'ETC', 1),
 ('Arbitrum', 'ARB', 1),
 ('Immutable', 'IMX', 1),
-('Render', 'RNDR', 1),
+('Render', 'RENDER', 1),
 ('Hedera', 'HBAR', 1),
 ('OKB', 'OKB', 1),
 ('Stellar', 'XLM', 1),

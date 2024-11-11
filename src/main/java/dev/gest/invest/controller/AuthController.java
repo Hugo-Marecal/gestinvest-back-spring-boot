@@ -18,8 +18,6 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -40,9 +38,8 @@ public class AuthController {
 
     @GetMapping("/")
     // test if method for cron is working
-    public Mono<Map<String, Double>> welcome() {
-        List<String> groups = groupSymbolsService.getSymbolsInGroups(1, 60);
-        return cryptoPriceService.fetchPricesForGroupAsync(groups);
+    public Mono<Void> welcome() {
+        return cryptoPriceService.updateCryptoPrices(1, 60);
     }
 
     @PostMapping("/signup")
