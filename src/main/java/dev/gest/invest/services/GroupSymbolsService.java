@@ -20,10 +20,8 @@ public class GroupSymbolsService {
         List<String> groups = new ArrayList<>();
 
         for (int i = 0; i < symbols.size(); i += groupSize) {
-            // Récupérer le sous-groupe de taille groupSize (ou moins si on est à la fin de la liste)
             List<String> subList = symbols.subList(i, Math.min(i + groupSize, symbols.size()));
 
-            // Joindre les éléments du sous-groupe avec une virgule et ajouter au résultat
             String joinedGroup = String.join(",", subList);
             groups.add(joinedGroup);
         }

@@ -6,7 +6,6 @@ import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AuthService;
 import dev.gest.invest.services.CryptoPriceService;
-import dev.gest.invest.services.GroupSymbolsService;
 import dev.gest.invest.services.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -26,18 +25,16 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtService jwtService;
-    private final GroupSymbolsService groupSymbolsService;
     private final CryptoPriceService cryptoPriceService;
 
-    public AuthController(AuthService authService, JwtService jwtService, GroupSymbolsService groupSymbolsService, CryptoPriceService cryptoPriceService) {
+    public AuthController(AuthService authService, JwtService jwtService, CryptoPriceService cryptoPriceService) {
         this.authService = authService;
         this.jwtService = jwtService;
-        this.groupSymbolsService = groupSymbolsService;
         this.cryptoPriceService = cryptoPriceService;
     }
 
     @GetMapping("/")
-    // test if method for cron is working
+    // method to test if method for cron is working
     public Mono<Void> welcome() {
         return cryptoPriceService.updateCryptoPrices(1, 60);
     }
@@ -65,8 +62,8 @@ public class AuthController {
         boolean isVerified = authService.verify(token);
 
         //Encode message for client can read it and display it
-        String successMessage = URLEncoder.encode("Email vérifié avec succès, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
-        String errorMessage = URLEncoder.encode("Email déjà vérifié, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
+        String successMessage = URLEncoder.encode("Email successfully verified, please login now.", StandardCharsets.UTF_8);
+        String errorMessage = URLEncoder.encode("Email already verified, please login now.", StandardCharsets.UTF_8);
 
         if (isVerified) {
             response.sendRedirect("http://localhost:5173/?successMessage=" + successMessage);

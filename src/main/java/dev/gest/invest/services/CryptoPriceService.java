@@ -69,8 +69,8 @@ public class CryptoPriceService {
 
                     return Mono.fromCallable(() -> assetRepository.updatePriceBySymbol(price, symbol))
                             .subscribeOn(Schedulers.boundedElastic())
-                            .doOnSuccess(count -> log.info("Mise à jour du prix pour {}: {}", symbol, price))
-                            .doOnError(e -> log.error("Erreur lors de la mise à jour de {}: {}", symbol, e));
+                            .doOnSuccess(count -> log.info("Price update for {}: {}", symbol, price))
+                            .doOnError(e -> log.error("Error updating {}: {}", symbol, e));
                 })
                 .then();
     }
