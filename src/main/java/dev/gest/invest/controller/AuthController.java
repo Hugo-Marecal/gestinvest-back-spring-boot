@@ -4,9 +4,7 @@ import dev.gest.invest.dto.LoginUserDto;
 import dev.gest.invest.dto.RegisterUserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
-import dev.gest.invest.services.AuthService;
-import dev.gest.invest.services.CryptoPriceService;
-import dev.gest.invest.services.JwtService;
+import dev.gest.invest.services.*;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,6 +15,8 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -25,18 +25,24 @@ public class AuthController {
 
     private final AuthService authService;
     private final JwtService jwtService;
+    private final GroupSymbolsService groupSymbolsService;
     private final CryptoPriceService cryptoPriceService;
+    private final StockPriceService stockPriceService;
 
-    public AuthController(AuthService authService, JwtService jwtService, CryptoPriceService cryptoPriceService) {
+    public AuthController(AuthService authService, JwtService jwtService, CryptoPriceService cryptoPriceService, StockPriceService stockPriceService, GroupSymbolsService groupSymbolsService) {
         this.authService = authService;
         this.jwtService = jwtService;
         this.cryptoPriceService = cryptoPriceService;
+        this.stockPriceService = stockPriceService;
+        this.groupSymbolsService = groupSymbolsService;
     }
 
     @GetMapping("/")
     // method to test if method for cron is working
-    public Mono<Void> welcome() {
-        return cryptoPriceService.updateCryptoPrices(1, 60);
+    public Mono<Map<String, Double>> welcome() {
+//        return cryptoPriceService.updateCryptoPrices(1, 60);
+        List<String> groups = groupSymbolsService.getSymbolsInGroups(2, 40);
+        return stockPriceService.fetchPricesForGroupAsync(groups);
     }
 
     @PostMapping("/signup")
