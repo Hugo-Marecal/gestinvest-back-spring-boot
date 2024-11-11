@@ -32,7 +32,7 @@ public class CryptoPriceService {
         this.assetRepository = assetRepository;
     }
 
-    public Mono<Map<String, Double>> fetchPricesForGroupAsync(List<String> group) {
+    public Mono<Map<String, Double>> fetchCryptoPricesForGroupAsync(List<String> group) {
         String symbols = String.join(",", group);
 
         return webClient
@@ -60,7 +60,7 @@ public class CryptoPriceService {
 
         return Flux.fromIterable(groups)
                 .flatMap(group -> {
-                    return fetchPricesForGroupAsync(groups);
+                    return fetchCryptoPricesForGroupAsync(groups);
                 })
                 .flatMap(prices -> Flux.fromIterable(prices.entrySet()))
                 .flatMap(entry -> {
