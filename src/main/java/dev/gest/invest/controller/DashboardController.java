@@ -37,6 +37,10 @@ public class DashboardController {
 
         List<InvestLineDto> allLines = dashboardService.getInvestLinesByUser(userId);
 
+        if (allLines.isEmpty()) {
+            return null;
+        }
+
         return dashboardService.getAssetUserInformation(allLines);
     }
 

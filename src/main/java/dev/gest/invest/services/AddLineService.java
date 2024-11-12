@@ -44,7 +44,6 @@ public class AddLineService {
         if (!isDateOk(addLineDto.getDate())) {
             throw new IllegalArgumentException("Date is not valid");
         }
-
         UUID assetId = assetRepository.findAssetIdByName(addLineDto.getAsset_name())
                 .orElseThrow(() -> new IllegalArgumentException("Asset not found"));
 
@@ -53,26 +52,32 @@ public class AddLineService {
         UUID tradingTypeId = tradingOperationTypeRepository.findTradingOperationTypeIdByName(tradingOperationType);
 
         List<InvestLineDto> allLines = investLineRepositoryCustom.findAllInvestLinesByUser(userId);
-        PortfolioData assetInformationByUser = dashboardService.getAssetUserInformation(allLines);
 
-        if ("sell".equalsIgnoreCase(tradingOperationType)) {
-            AssetUserInformationDto asset = assetInformationByUser.getAssetUserInformation()
-                    .stream()
-                    .filter(a -> a.getAssetName().equalsIgnoreCase(addLineDto.getAsset_name()))
-                    .findFirst()
-                    .orElse(null);
+        if (!allLines.isEmpty()) {
 
-            if (asset == null) {
-                throw new IllegalArgumentException("This asset does not exist in your portfolio");
+            PortfolioData assetInformationByUser = dashboardService.getAssetUserInformation(allLines);
+
+            if ("sell".equalsIgnoreCase(tradingOperationType)) {
+                AssetUserInformationDto asset = assetInformationByUser.getAssetUserInformation()
+                        .stream()
+                        .filter(a -> a.getAssetName().equalsIgnoreCase(addLineDto.getAsset_name()))
+                        .findFirst()
+                        .orElse(null);
+
+                if (asset == null) {
+                    throw new IllegalArgumentException("This asset does not exist in your portfolio");
+                }
+
+                if (asset.getQuantity() < addLineDto.getAsset_number()) {
+                    throw new IllegalArgumentException("The quantity to be sold exceeds what you own");
+                }
+
+                if (addLineDto.getAsset_number() <= 0) {
+                    throw new IllegalArgumentException("Quantity should be greater than 0");
+                }
             }
-
-            if (asset.getQuantity() < addLineDto.getAsset_number()) {
-                throw new IllegalArgumentException("The quantity to be sold exceeds what you own");
-            }
-
-            if (addLineDto.getAsset_number() <= 0) {
-                throw new IllegalArgumentException("Quantity should be greater than 0");
-            }
+        } else if (tradingOperationType.equalsIgnoreCase("sell")) {
+            throw new IllegalArgumentException("You can not sell, you don't have any lines");
         }
 
         InvestLine newData = new InvestLine();
