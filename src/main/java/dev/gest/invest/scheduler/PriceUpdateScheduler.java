@@ -17,7 +17,7 @@ public class PriceUpdateScheduler {
         this.stockPriceService = stockPriceService;
     }
 
-    @Scheduled(cron = "0 6 17 * * *")
+    @Scheduled(cron = "0 2 10 * * *")
     public void updateCryptoPricesJob() {
         cryptoPriceService.updateCryptoPrices(1, 60)
                 .subscribe(
@@ -26,7 +26,7 @@ public class PriceUpdateScheduler {
                 );
     }
 
-    @Scheduled(cron = "0 6 17 * * *")
+    @Scheduled(cron = "0 2 10 * * *")
     public void updateStockPricesJob() {
         stockPriceService.updateStockPrices(2, 40)
                 .subscribe(
