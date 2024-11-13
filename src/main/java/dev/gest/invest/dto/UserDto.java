@@ -15,7 +15,9 @@ public class UserDto {
     private String last_name;
     private String first_name;
 
-    public UserDto(String email) {
+    public UserDto(String email, String last_name, String first_name) {
         this.email = email;
+        this.last_name = last_name;
+        this.first_name = first_name;
     }
 }
