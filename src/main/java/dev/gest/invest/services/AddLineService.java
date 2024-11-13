@@ -41,6 +41,10 @@ public class AddLineService {
     }
 
     public String addLine(UUID userId, String tradingOperationType, AddLineDto addLineDto) {
+        double assetNumber = Double.parseDouble(addLineDto.getAsset_number());
+        double price = Double.parseDouble(addLineDto.getPrice());
+        double fees = Double.parseDouble(addLineDto.getFees());
+
         if (!isDateOk(addLineDto.getDate())) {
             throw new IllegalArgumentException("Date is not valid");
         }
@@ -68,11 +72,11 @@ public class AddLineService {
                     throw new IllegalArgumentException("This asset does not exist in your portfolio");
                 }
 
-                if (asset.getQuantity() < addLineDto.getAsset_number()) {
+                if (asset.getQuantity() < assetNumber) {
                     throw new IllegalArgumentException("The quantity to be sold exceeds what you own");
                 }
 
-                if (addLineDto.getAsset_number() <= 0) {
+                if (assetNumber <= 0) {
                     throw new IllegalArgumentException("Quantity should be greater than 0");
                 }
             }
@@ -83,9 +87,9 @@ public class AddLineService {
         InvestLine newData = new InvestLine();
         newData.setAsset(assetId);
         newData.setPortfolio(portfolioId);
-        newData.setAsset_number(BigDecimal.valueOf(addLineDto.getAsset_number()));
-        newData.setPrice(BigDecimal.valueOf(addLineDto.getPrice()));
-        newData.setFees(addLineDto.getFees());
+        newData.setAsset_number(BigDecimal.valueOf(assetNumber));
+        newData.setPrice(BigDecimal.valueOf(price));
+        newData.setFees(fees);
         newData.setDate(LocalDate.parse(addLineDto.getDate()));
         newData.setTradingOperationType(tradingTypeId);
 

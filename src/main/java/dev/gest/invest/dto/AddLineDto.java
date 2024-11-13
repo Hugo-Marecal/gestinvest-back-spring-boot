@@ -1,7 +1,6 @@
 package dev.gest.invest.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,19 +11,19 @@ public class AddLineDto {
     @NotBlank(message = "Asset is required")
     private String asset_name;
 
-    @NotNull(message = "Number is required")
-    private double asset_number;
+    @NotBlank(message = "Quantity of asset is required")
+    private String asset_number;
 
-    @NotNull(message = "Price is required")
-    private double price;
+    @NotBlank(message = "Price is required")
+    private String price;
 
-    @NotNull(message = "Fees are required")
-    private double fees;
+    @NotBlank(message = "Fees are required")
+    private String fees;
 
     @NotBlank(message = "Date is required")
     private String date;
 
-    public AddLineDto(String asset_name, double asset_number, double price, double fees, String date) {
+    public AddLineDto(String asset_name, String asset_number, String price, String fees, String date) {
         this.asset_name = asset_name;
         this.asset_number = asset_number;
         this.price = price;
