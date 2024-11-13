@@ -5,6 +5,7 @@ import dev.gest.invest.dto.AssetLineByUserProjection;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.InvestLineRepository;
 import dev.gest.invest.services.AssetDetailsService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,12 +28,11 @@ public class AssetDetailsController {
     }
 
     @GetMapping("{symbol}")
-    public AssetDetailsByUserDto getAssetDetails(@PathVariable String symbol, @AuthenticationPrincipal User user) {
+    public ResponseEntity<AssetDetailsByUserDto> getAssetDetails(@PathVariable String symbol, @AuthenticationPrincipal User user) {
         UUID userId = user.getId();
 
         List<AssetLineByUserProjection> assetDetails = investLineRepository.findAllAssetLinesByUserAndSymbol(userId, symbol);
 
-        return assetDetailsService.calculateDetails(assetDetails);
+        return ResponseEntity.ok(assetDetailsService.calculateDetails(assetDetails));
     }
-
 }

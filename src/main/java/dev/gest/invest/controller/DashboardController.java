@@ -6,6 +6,7 @@ import dev.gest.invest.dto.InvestLineDto;
 import dev.gest.invest.dto.PortfolioData;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.AssetRepository;
+import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AddLineService;
 import dev.gest.invest.services.DashboardService;
 import jakarta.validation.Valid;
@@ -32,7 +33,7 @@ public class DashboardController {
     }
 
     @GetMapping("/")
-    public PortfolioData getDashboardInfo(@AuthenticationPrincipal User user) {
+    public ResponseEntity<PortfolioData> getDashboardInfo(@AuthenticationPrincipal User user) {
         UUID userId = user.getId();
 
         List<InvestLineDto> allLines = dashboardService.getInvestLinesByUser(userId);
@@ -41,33 +42,35 @@ public class DashboardController {
             return null;
         }
 
-        return dashboardService.getAssetUserInformation(allLines);
+        return ResponseEntity.ok(dashboardService.getAssetUserInformation(allLines));
     }
 
     @GetMapping("/modal")
-    public List<AssetCategoryProjection> getAllAsset() {
-        return assetRepository.findAllAssetNamesAndCategoryNames();
+    public ResponseEntity<List<AssetCategoryProjection>> getAllAsset() {
+        return ResponseEntity.ok(assetRepository.findAllAssetNamesAndCategoryNames());
     }
 
     @PostMapping("/buy")
-    public ResponseEntity<String> addBuyInvestmentLine(@AuthenticationPrincipal User user, @RequestBody @Valid AddLineDto addLineDto) {
+    public ResponseEntity<ApiResponse> addBuyInvestmentLine(@AuthenticationPrincipal User user, @RequestBody @Valid AddLineDto addLineDto) {
 
         UUID userId = user.getId();
         String tradingOperationType = "buy";
 
         addLineService.addLine(userId, tradingOperationType, addLineDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Add a successful buy investment line");
+        ApiResponse response = new ApiResponse("success", "Successful addition of a purchase investment line");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/sell")
-    public ResponseEntity<String> addSellInvestmentLine(@AuthenticationPrincipal User user, @RequestBody @Valid AddLineDto addLineDto) {
+    public ResponseEntity<ApiResponse> addSellInvestmentLine(@AuthenticationPrincipal User user, @RequestBody @Valid AddLineDto addLineDto) {
 
         UUID userId = user.getId();
         String tradingOperationType = "sell";
 
         addLineService.addLine(userId, tradingOperationType, addLineDto);
 
-        return ResponseEntity.status(HttpStatus.OK).body("Add a successful sell investment line");
+        ApiResponse response = new ApiResponse("success", "Successful addition of a sales investment line");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
