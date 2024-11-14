@@ -25,7 +25,7 @@ public class AccountController {
         return ResponseEntity.ok(userInfos);
     }
 
-    @PostMapping("/")
+    @PatchMapping("/")
     public ResponseEntity<UserDto> updateAccountInfos(@AuthenticationPrincipal User user, @RequestBody UpdateUserDto updateUserDto) {
         UserDto updatedUser = accountService.updateAccountInfos(user, updateUserDto);
 
