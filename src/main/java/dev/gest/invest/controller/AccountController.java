@@ -31,4 +31,11 @@ public class AccountController {
 
         return ResponseEntity.ok(updatedUser);
     }
+
+    @PatchMapping("/edit-mail")
+    public ResponseEntity<UserDto> editMail(@AuthenticationPrincipal User user, @RequestBody UpdateUserDto updateUserDto) {
+        UserDto updatedUser = accountService.editMail(user, updateUserDto);
+
+        return ResponseEntity.ok(updatedUser);
+    }
 }
