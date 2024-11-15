@@ -26,10 +26,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
 
-        String errorMessage = exception.getBindingResult().getFieldErrors().stream()
+        String fieldErrorMessage = exception.getBindingResult().getFieldErrors().stream()
                 .findFirst()
                 .map(error -> error.getDefaultMessage())
-                .orElse("Validation error");
+                .orElse(null);
+
+        String globalErrorMessage = exception.getBindingResult().getGlobalErrors().stream()
+                .findFirst()
+                .map(error -> error.getDefaultMessage())
+                .orElse(null);
+
+        System.out.println(fieldErrorMessage);
+        System.out.println(globalErrorMessage);
+
+        String errorMessage = globalErrorMessage != null ? globalErrorMessage : (fieldErrorMessage != null ? fieldErrorMessage : "Validation error");
 
         ErrorResponse errorResponse = new ErrorResponse(errorMessage);
 

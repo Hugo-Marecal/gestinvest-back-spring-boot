@@ -11,8 +11,8 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
 
     @Override
     public void initialize(PasswordMatches constraintAnnotation) {
-        this.passwordField = passwordField;
-        this.confirmationField = confirmationField;
+        this.passwordField = constraintAnnotation.passwordField();
+        this.confirmationField = constraintAnnotation.confirmationField();
     }
 
     @Override
@@ -22,11 +22,8 @@ public class PasswordMatchesValidator implements ConstraintValidator<PasswordMat
         Object password = beanWrapper.getPropertyValue(passwordField);
         Object confirmation = beanWrapper.getPropertyValue(confirmationField);
 
-        if (password != null && confirmation != null) {
-            return password.equals(confirmation);
-        }
 
-        return false;
+        return password != null && password.equals(confirmation);
     }
 
 }

@@ -1,5 +1,6 @@
 package dev.gest.invest.services;
 
+import dev.gest.invest.dto.EditPasswordDto;
 import dev.gest.invest.dto.UpdateUserDto;
 import dev.gest.invest.dto.UserDto;
 import dev.gest.invest.model.User;
@@ -94,6 +95,10 @@ public class AccountService {
         user.setEmail(userNewEmail);
         userRepo.save(user);
 
+        return true;
+    }
+
+    public boolean editPassword(User user, EditPasswordDto input) {
         return true;
     }
 }

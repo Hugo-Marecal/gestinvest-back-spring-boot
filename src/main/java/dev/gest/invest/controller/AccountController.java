@@ -1,11 +1,13 @@
 package dev.gest.invest.controller;
 
+import dev.gest.invest.dto.EditPasswordDto;
 import dev.gest.invest.dto.UpdateUserDto;
 import dev.gest.invest.dto.UserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AccountService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -60,5 +62,13 @@ public class AccountController {
         } else {
             response.sendRedirect("http://localhost:5173/?clearLocalStorage=true&errorMessage=" + errorMessage);
         }
+    }
+
+    @PatchMapping("/edit-password")
+    public ResponseEntity<ApiResponse> editPassword(@AuthenticationPrincipal User user, @RequestBody @Valid EditPasswordDto editPasswordDto) {
+        boolean updatedPassword = accountService.editPassword(user, editPasswordDto);
+
+        ApiResponse response = new ApiResponse("success", "Update password successful");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
