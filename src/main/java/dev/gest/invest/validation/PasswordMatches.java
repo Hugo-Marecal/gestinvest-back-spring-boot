@@ -15,4 +15,8 @@ public @interface PasswordMatches {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
+    String passwordField();
+
+    String confirmationField();
 }
