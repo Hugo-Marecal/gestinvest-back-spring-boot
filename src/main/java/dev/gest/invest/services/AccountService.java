@@ -55,7 +55,7 @@ public class AccountService {
         userData.setToken(token);
 
         User updatedUser = userRepo.save(userData);
-        
+
         sendVerificationEmail(input.getEmail(), token);
 
         return new UserDto(updatedUser.getEmail());
@@ -64,7 +64,7 @@ public class AccountService {
     public void sendVerificationEmail(String email, String token) {
         String subject = "Email verification";
         String htmlMessage = "<html><body>"
-                + "<a href=\"http://localhost:8080/api/auth/verify-mail/" + token + "\">Click here to verify your new email</a>"
+                + "<a href=\"http://localhost:8080/api/account/verify-mail/" + token + "\">Click here to verify your new email</a>"
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(email, subject, htmlMessage);
@@ -72,5 +72,28 @@ public class AccountService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean verify(String token) {
+        String userNewEmail = jwtService.extractUsername(token);
+        if (userNewEmail == null) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+
+        User user = userRepo.findByToken(token)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (userNewEmail.equalsIgnoreCase(user.getEmail())) {
+            return false;
+        }
+
+        if (!token.equalsIgnoreCase(user.getToken())) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+
+        user.setEmail(userNewEmail);
+        userRepo.save(user);
+
+        return true;
     }
 }

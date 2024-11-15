@@ -37,7 +37,8 @@ public class SecurityConfiguration {
                                 "/api/auth/",
                                 "/api/auth/signup",
                                 "/api/auth/login",
-                                "/api/auth/verify/{token}"
+                                "/api/auth/verify/{token}",
+                                "/api/account/verify-mail/{token}"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
