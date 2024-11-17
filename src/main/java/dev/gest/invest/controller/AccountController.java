@@ -42,7 +42,7 @@ public class AccountController {
     }
 
     @PatchMapping("/edit-mail")
-    public ResponseEntity<ApiResponse> editMail(@AuthenticationPrincipal User user, @RequestBody UpdateUserDto updateUserDto) {
+    public ResponseEntity<ApiResponse> editMail(@AuthenticationPrincipal User user, @RequestBody @Valid UpdateUserDto updateUserDto) {
         UserDto updatedUser = accountService.editMail(user, updateUserDto);
 
         ApiResponse response = new ApiResponse("success", "Demand send, please verify your new email");
