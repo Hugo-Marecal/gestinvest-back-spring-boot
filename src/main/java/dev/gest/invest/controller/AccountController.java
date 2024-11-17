@@ -66,9 +66,9 @@ public class AccountController {
 
     @PatchMapping("/edit-password")
     public ResponseEntity<ApiResponse> editPassword(@AuthenticationPrincipal User user, @RequestBody @Valid EditPasswordDto editPasswordDto) {
-        boolean updatedPassword = accountService.editPassword(user, editPasswordDto);
+        accountService.editPassword(user, editPasswordDto);
 
-        ApiResponse response = new ApiResponse("success", "Update password successful");
+        ApiResponse response = new ApiResponse("success", "Password updated successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

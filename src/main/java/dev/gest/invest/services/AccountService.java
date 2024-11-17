@@ -6,6 +6,7 @@ import dev.gest.invest.dto.UserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.UserRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -16,11 +17,13 @@ public class AccountService {
     private final UserRepository userRepo;
     private final JwtService jwtService;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AccountService(UserRepository userRepo, JwtService jwtService, EmailService emailService) {
+    public AccountService(UserRepository userRepo, JwtService jwtService, EmailService emailService, PasswordEncoder passwordEncoder) {
         this.userRepo = userRepo;
         this.jwtService = jwtService;
         this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public UserDto updateAccountInfos(User user, UpdateUserDto input) {
@@ -98,7 +101,21 @@ public class AccountService {
         return true;
     }
 
-    public boolean editPassword(User user, EditPasswordDto input) {
-        return true;
+    public void editPassword(User user, EditPasswordDto input) {
+        if (!passwordEncoder.matches(input.getCurrentPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Current password error");
+        }
+
+        if (passwordEncoder.matches(input.getNewPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("New password must be different");
+        }
+
+        User userData = userRepo.findByEmail(user.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        userData.setPassword(passwordEncoder.encode(input.getNewPassword()));
+
+        userRepo.save(userData);
+
     }
 }
