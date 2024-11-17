@@ -6,6 +6,7 @@ import dev.gest.invest.dto.UserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.UserRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ import java.util.Optional;
 
 @Service
 public class AccountService {
+
+    @Value("${api.url}")
+    private String apiUrl;
 
     private final UserRepository userRepo;
     private final JwtService jwtService;
@@ -68,7 +72,7 @@ public class AccountService {
     public void sendVerificationEmail(String email, String token) {
         String subject = "Email verification";
         String htmlMessage = "<html><body>"
-                + "<a href=\"http://localhost:8080/api/account/verify-mail/" + token + "\">Click here to verify your new email</a>"
+                + "<a href=" + apiUrl + "\"/api/account/verify-mail/" + token + "\">Click here to verify your new email</a>"
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(email, subject, htmlMessage);

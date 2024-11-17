@@ -40,7 +40,7 @@ public class AddLineService {
         this.investLineRepository = investLineRepository;
     }
 
-    public String addLine(UUID userId, String tradingOperationType, AddLineDto addLineDto) {
+    public void addLine(UUID userId, String tradingOperationType, AddLineDto addLineDto) {
         double assetNumber = Double.parseDouble(addLineDto.getAsset_number());
         double price = Double.parseDouble(addLineDto.getPrice());
         double fees = Double.parseDouble(addLineDto.getFees());
@@ -94,8 +94,6 @@ public class AddLineService {
         newData.setTradingOperationType(tradingTypeId);
 
         investLineRepository.save(newData);
-
-        return "Job done";
     }
 
     private boolean isDateOk(String date) {

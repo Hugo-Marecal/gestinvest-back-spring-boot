@@ -7,6 +7,7 @@ import dev.gest.invest.model.User;
 import dev.gest.invest.repository.PortfolioRepository;
 import dev.gest.invest.repository.UserRepository;
 import jakarta.mail.MessagingException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,22 +18,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
+    @Value("${api.url}")
+    private String apiUrl;
+
     private final UserRepository userRepo;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
     private final PortfolioRepository portfolioRepository;
-    private final EmailService emailService;
     private final UserDetailsService userDetailsService;
+    private final EmailService emailService;
+    private final JwtService jwtService;
 
     public AuthService(
             UserRepository userRepo,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService,
             PortfolioRepository portfolioRepository,
+            UserDetailsService userDetailsService,
             EmailService emailService,
-            UserDetailsService userDetailsService
+            JwtService jwtService
     ) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
@@ -86,7 +90,7 @@ public class AuthService {
     public void sendVerificationEmail(User user, String token) {
         String subject = "Account verification";
         String htmlMessage = "<html><body>"
-                + "<a href=\"http://localhost:8080/api/auth/verify/" + token + "\">Click here to verify your email</a>"
+                + "<a href=" + apiUrl + "\"/api/auth/verify/" + token + "\">Click here to verify your email</a>"
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);

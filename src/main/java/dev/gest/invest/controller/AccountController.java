@@ -8,6 +8,7 @@ import dev.gest.invest.responses.ApiResponse;
 import dev.gest.invest.services.AccountService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 @RestController
 @RequestMapping("/api/account")
 public class AccountController {
+
+    @Value("${client.url}")
+    private String clientUrl;
 
     private final AccountService accountService;
 
@@ -58,9 +62,9 @@ public class AccountController {
         String errorMessage = URLEncoder.encode("Email already changed, please login with your new email.", StandardCharsets.UTF_8);
 
         if (isVerified) {
-            response.sendRedirect("http://localhost:5173/?clearLocalStorage=true&successMessage=" + successMessage);
+            response.sendRedirect(clientUrl + "/?clearLocalStorage=true&successMessage=" + successMessage);
         } else {
-            response.sendRedirect("http://localhost:5173/?clearLocalStorage=true&errorMessage=" + errorMessage);
+            response.sendRedirect(clientUrl + "/?clearLocalStorage=true&errorMessage=" + errorMessage);
         }
     }
 

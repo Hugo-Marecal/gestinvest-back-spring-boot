@@ -8,6 +8,7 @@ import dev.gest.invest.services.AuthService;
 import dev.gest.invest.services.JwtService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,9 @@ import java.nio.charset.StandardCharsets;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    @Value("${client.url}")
+    private String clientUrl;
 
     private final AuthService authService;
     private final JwtService jwtService;
@@ -62,9 +66,9 @@ public class AuthController {
         String errorMessage = URLEncoder.encode("Email already verified, please login now.", StandardCharsets.UTF_8);
 
         if (isVerified) {
-            response.sendRedirect("http://localhost:5173/?successMessage=" + successMessage);
+            response.sendRedirect(clientUrl + "/?successMessage=" + successMessage);
         } else {
-            response.sendRedirect("http://localhost:5173/?errorMessage=" + errorMessage);
+            response.sendRedirect(clientUrl + "/?errorMessage=" + errorMessage);
         }
     }
 
