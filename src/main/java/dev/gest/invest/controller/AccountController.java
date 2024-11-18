@@ -75,4 +75,12 @@ public class AccountController {
         ApiResponse response = new ApiResponse("success", "Password updated successfully");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PatchMapping("/delete")
+    public ResponseEntity<ApiResponse> deletedAccount(@AuthenticationPrincipal User user) {
+        accountService.deleteAccount(user);
+
+        ApiResponse response = new ApiResponse("success", "Account deleted");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -122,4 +122,18 @@ public class AccountService {
         userRepo.save(userData);
 
     }
+
+    public void deleteAccount(User user) {
+        User userData = userRepo.findByEmail(user.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        userData.setFirst_name(null);
+        userData.setLast_name(null);
+        userData.setPassword(passwordEncoder.encode("deleted-user"));
+        userData.setEmail(userData.getId() + "@deleted.com");
+        userData.setToken(null);
+        userData.setVerified(false);
+
+        userRepo.save(userData);
+    }
 }
