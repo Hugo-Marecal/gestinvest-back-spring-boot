@@ -155,7 +155,7 @@ public class AuthService {
     public void sendVerificationEmail(String email, String token) {
         String subject = "Reset password";
         String htmlMessage = "<html><body>"
-                + "<a href=" + clientUrl + "\"/reset-password?token=" + token + "\">Click here to reset your password</a>"
+                + "<a href=" + clientUrl + "/reset-password?token=" + token + ">Click here to reset your password</a>"
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(email, subject, htmlMessage);

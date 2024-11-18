@@ -100,7 +100,7 @@ public class AuthController {
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
         boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
-
+        System.out.println(isTokenValid);
         if (!isTokenValid) {
             throw new IllegalArgumentException("Invalid or expired token");
         }

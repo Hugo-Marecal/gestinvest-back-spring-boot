@@ -1,6 +1,7 @@
 package dev.gest.invest.exception;
 
 import dev.gest.invest.responses.ErrorResponse;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -43,6 +44,12 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = new ErrorResponse(errorMessage);
 
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(ExpiredJwtException exception) {
+        ErrorResponse errorResponse = new ErrorResponse("Token expired or invalid");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
