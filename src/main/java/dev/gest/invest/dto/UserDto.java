@@ -11,7 +11,7 @@ import lombok.Setter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 
-    @NotBlank(message = "Email is required")
+    @NotBlank(message = "Email requis")
     @Email
     private String email;
     private String last_name;

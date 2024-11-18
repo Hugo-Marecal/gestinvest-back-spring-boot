@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 public class LoginUserDto {
 
-    @NotBlank(message = "Email is required")
+    @NotBlank(message = "Email requis")
     @Email
     private String email;
 
-    @NotBlank(message = "Password is required")
+    @NotBlank(message = "Mot de passe requis")
     private String password;
 }

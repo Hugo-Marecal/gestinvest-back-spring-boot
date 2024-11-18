@@ -14,14 +14,14 @@ import lombok.Setter;
 )
 public class EditPasswordDto {
 
-    @NotBlank(message = "Current Password is required")
+    @NotBlank(message = "Mot de passe actuel requis")
     private String currentPassword;
 
-    @NotBlank(message = "New Password is required")
+    @NotBlank(message = "Nouveau mot de passe requis")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$",
-            message = "New Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character, and be at least 8 characters long")
+            message = "Le nouveau mot de passe doit contenir au moins une lettre minuscule, une lettre majuscule, un chiffre, un caractère spécial et comporter au moins 8 caractères.")
     private String newPassword;
 
-    @NotBlank(message = "Confirmation is required")
+    @NotBlank(message = "Confirmation du mot de passe requise")
     private String confirmation;
 }

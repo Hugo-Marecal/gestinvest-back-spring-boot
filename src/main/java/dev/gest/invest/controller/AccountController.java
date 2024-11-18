@@ -49,7 +49,7 @@ public class AccountController {
     public ResponseEntity<ApiResponse> editMail(@AuthenticationPrincipal User user, @RequestBody @Valid UpdateUserDto updateUserDto) {
         UserDto updatedUser = accountService.editMail(user, updateUserDto);
 
-        ApiResponse response = new ApiResponse("success", "Demand send, please verify your new email");
+        ApiResponse response = new ApiResponse("success", "Envoi de la demande, veuillez vérifier votre nouvel email");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -58,8 +58,8 @@ public class AccountController {
         boolean isVerified = accountService.verify(token);
 
         //Encode message for client can read it and display it
-        String successMessage = URLEncoder.encode("Email has been successfully modified, please log in with your new email.", StandardCharsets.UTF_8);
-        String errorMessage = URLEncoder.encode("Email already changed, please login with your new email.", StandardCharsets.UTF_8);
+        String successMessage = URLEncoder.encode("L'e-mail a été modifié avec succès, veuillez vous connecter avec votre nouvel e-mail.", StandardCharsets.UTF_8);
+        String errorMessage = URLEncoder.encode("L'e-mail a déjà été modifiée, veuillez vous connecter avec votre nouvelle adresse.", StandardCharsets.UTF_8);
 
         if (isVerified) {
             response.sendRedirect(clientUrl + "/?clearLocalStorage=true&successMessage=" + successMessage);
@@ -72,7 +72,7 @@ public class AccountController {
     public ResponseEntity<ApiResponse> editPassword(@AuthenticationPrincipal User user, @RequestBody @Valid EditPasswordDto editPasswordDto) {
         accountService.editPassword(user, editPasswordDto);
 
-        ApiResponse response = new ApiResponse("success", "Password updated successfully");
+        ApiResponse response = new ApiResponse("success", "Mot de passe mis à jour avec succès");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -80,7 +80,7 @@ public class AccountController {
     public ResponseEntity<ApiResponse> deletedAccount(@AuthenticationPrincipal User user) {
         accountService.deleteAccount(user);
 
-        ApiResponse response = new ApiResponse("success", "Account deleted");
+        ApiResponse response = new ApiResponse("success", "Compte supprimé");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

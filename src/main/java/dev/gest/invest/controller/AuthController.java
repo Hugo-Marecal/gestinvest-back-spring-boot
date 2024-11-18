@@ -53,7 +53,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> register(@Valid @RequestBody RegisterUserDto registerUserDto) {
         authService.signup(registerUserDto);
 
-        ApiResponse response = new ApiResponse("success", "User registered successfully, please verify your email");
+        ApiResponse response = new ApiResponse("success", "Utilisateur enregistré avec succès, veuillez vérifier votre email");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -66,7 +66,7 @@ public class AuthController {
 
         String jwtToken = jwtService.generateToken(authenticatedUser.getUsername(), expirationTime);
 
-        ApiResponse response = new ApiResponse("success", "User successfully logged in", jwtToken);
+        ApiResponse response = new ApiResponse("success", "L'utilisateur s'est connecté avec succès", jwtToken);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -75,8 +75,8 @@ public class AuthController {
         boolean isVerified = authService.verify(token);
 
         //Encode message for client can read it and display it
-        String successMessage = URLEncoder.encode("Email successfully verified, please login now.", StandardCharsets.UTF_8);
-        String errorMessage = URLEncoder.encode("Email already verified, please login now.", StandardCharsets.UTF_8);
+        String successMessage = URLEncoder.encode("E-mail vérifié avec succès, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
+        String errorMessage = URLEncoder.encode("Email déjà vérifié, veuillez maintenant vous connecter.", StandardCharsets.UTF_8);
 
         if (isVerified) {
             response.sendRedirect(clientUrl + "/?successMessage=" + successMessage);
@@ -89,23 +89,23 @@ public class AuthController {
     public ResponseEntity<ApiResponse> forgotPassword(@RequestBody @Valid UpdateUserDto input) {
         authService.forgotPassword(input);
 
-        ApiResponse response = new ApiResponse("success", "If an account is associated with this email, an email will be sent to reset the password.");
+        ApiResponse response = new ApiResponse("success", "Si un compte est associé à cet email, un email sera envoyé pour réinitialiser le mot de passe.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/reset-password-verify-token")
     public ResponseEntity<ApiResponse> isTokenValid(@RequestParam String token) {
         User user = userRepo.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired token"));
+                .orElseThrow(() -> new IllegalArgumentException("Token invalide ou expiré"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
         boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
         if (!isTokenValid) {
-            throw new IllegalArgumentException("Invalid or expired token");
+            throw new IllegalArgumentException("Token invalide ou expiré");
         }
 
-        ApiResponse response = new ApiResponse("success", "Token valid");
+        ApiResponse response = new ApiResponse("success", "Token valide");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -113,7 +113,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordDto input) {
         authService.resetPassword(input);
 
-        ApiResponse response = new ApiResponse("success", "Reset password successfully, you can now login.");
+        ApiResponse response = new ApiResponse("success", "Réinitialisation du mot de passe réussie, vous pouvez maintenant vous connecter.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

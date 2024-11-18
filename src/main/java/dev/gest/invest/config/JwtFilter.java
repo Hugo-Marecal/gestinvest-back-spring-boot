@@ -70,7 +70,7 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Invalid or expired Token\"}");
+            response.getWriter().write("{\"error\": \"Token invalide ou expiré\"}");
         }
     }
 }

@@ -58,7 +58,7 @@ public class DashboardController {
 
         addLineService.addLine(userId, tradingOperationType, addLineDto);
 
-        ApiResponse response = new ApiResponse("success", "Successful addition of a purchase investment line");
+        ApiResponse response = new ApiResponse("success", "Ajout réussi d'une ligne d'investissement d'achat");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -70,7 +70,7 @@ public class DashboardController {
 
         addLineService.addLine(userId, tradingOperationType, addLineDto);
 
-        ApiResponse response = new ApiResponse("success", "Successful addition of a sales investment line");
+        ApiResponse response = new ApiResponse("success", "Ajout réussi d'une ligne d'investissement de vente");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException exception) {
-        ErrorResponse errorResponse = new ErrorResponse("Authentication failed");
+        ErrorResponse errorResponse = new ErrorResponse("L'authentification a échoué");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
@@ -49,7 +49,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(ExpiredJwtException exception) {
-        ErrorResponse errorResponse = new ErrorResponse("Token expired or invalid");
+        ErrorResponse errorResponse = new ErrorResponse("Token expiré ou invalide");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }

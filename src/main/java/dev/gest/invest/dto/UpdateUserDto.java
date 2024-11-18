@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class UpdateUserDto {
 
-    @NotBlank(message = "Email is required")
+    @NotBlank(message = "Email requis")
     @Email
     private String email;
     private String last_name;
