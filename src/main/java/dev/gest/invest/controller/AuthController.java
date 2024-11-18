@@ -2,6 +2,7 @@ package dev.gest.invest.controller;
 
 import dev.gest.invest.dto.LoginUserDto;
 import dev.gest.invest.dto.RegisterUserDto;
+import dev.gest.invest.dto.ResetPasswordDto;
 import dev.gest.invest.dto.UpdateUserDto;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.UserRepository;
@@ -93,19 +94,26 @@ public class AuthController {
     }
 
     @GetMapping("/reset-password-verify-token")
-    public ResponseEntity<ApiResponse> resetPassword(@RequestParam String token) {
+    public ResponseEntity<ApiResponse> isTokenValid(@RequestParam String token) {
         User user = userRepo.findByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid or expired token"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
         boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
-        System.out.println(isTokenValid);
         if (!isTokenValid) {
             throw new IllegalArgumentException("Invalid or expired token");
         }
 
         ApiResponse response = new ApiResponse("success", "Token valid");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse> resetPassword(@RequestBody @Valid ResetPasswordDto input) {
+        authService.resetPassword(input);
+
+        ApiResponse response = new ApiResponse("success", "Reset password successfully, you can now login.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

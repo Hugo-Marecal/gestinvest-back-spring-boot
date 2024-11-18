@@ -2,6 +2,7 @@ package dev.gest.invest.services;
 
 import dev.gest.invest.dto.LoginUserDto;
 import dev.gest.invest.dto.RegisterUserDto;
+import dev.gest.invest.dto.ResetPasswordDto;
 import dev.gest.invest.dto.UpdateUserDto;
 import dev.gest.invest.model.Portfolio;
 import dev.gest.invest.model.User;
@@ -163,5 +164,25 @@ public class AuthService {
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void resetPassword(ResetPasswordDto input) {
+        User user = userRepo.findByToken(input.getToken())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired token"));
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
+
+        boolean isTokenValid = jwtService.isTokenValid(input.getToken(), userDetails);
+        if (!isTokenValid) {
+            throw new IllegalArgumentException("Invalid or expired token");
+        }
+
+        if (passwordEncoder.matches(input.getPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("New password must be different than the old password");
+        }
+
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setToken(null);
+        userRepo.save(user);
     }
 }

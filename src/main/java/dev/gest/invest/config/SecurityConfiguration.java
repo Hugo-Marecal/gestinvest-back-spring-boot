@@ -39,6 +39,7 @@ public class SecurityConfiguration {
                                 "/api/auth/login",
                                 "/api/auth/verify/{token}",
                                 "/api/auth/forgot-password",
+                                "/api/auth/reset-password",
                                 "/api/auth/reset-password-verify-token",
                                 "/api/account/verify-mail/{token}"
                         ).permitAll()
