@@ -56,7 +56,7 @@ public class AuthService {
 
     public User signup(RegisterUserDto input) {
         User alreadyExistingUser = userRepo.findByEmail(input.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Email already use"));
+                .orElseThrow(() -> new IllegalArgumentException("Email déjà utilisé"));
 
         // 1 hour to milliseconds
         long expirationTime = TimeUnit.HOURS.toMillis(1);
@@ -67,7 +67,7 @@ public class AuthService {
 
         User createdUser = userRepo.save(user);
         if (createdUser.getId() == null) {
-            throw new IllegalArgumentException("Error, creation failed");
+            throw new IllegalArgumentException("Erreur, la création a échoué");
         }
 
         sendVerificationEmail(createdUser, token);
@@ -81,7 +81,7 @@ public class AuthService {
 
     public User authenticate(LoginUserDto input) {
         User user = userRepo.findByEmail(input.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Authentication failed"));
+                .orElseThrow(() -> new IllegalArgumentException("Échec de l'authentification"));
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -91,7 +91,7 @@ public class AuthService {
         );
 
         if (!user.getVerified()) {
-            throw new IllegalArgumentException("Account not verified. Please verify your account");
+            throw new IllegalArgumentException("Compte non vérifié. Veuillez vérifier votre compte");
         }
 
         return user;
@@ -104,7 +104,7 @@ public class AuthService {
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
-            System.out.println("Email send");
+            System.out.println("Email envoyé");
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -113,18 +113,18 @@ public class AuthService {
     public boolean verify(String token) {
         String userEmail = jwtService.extractUsername(token);
         if (userEmail == null) {
-            throw new IllegalArgumentException("Invalid token");
+            throw new IllegalArgumentException("Invalide token");
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
 
         boolean isTokenValid = jwtService.isTokenValid(token, userDetails);
         if (!isTokenValid) {
-            throw new IllegalArgumentException("Invalid token");
+            throw new IllegalArgumentException("Invalide token");
         }
 
         User user = userRepo.findByEmail(userEmail)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         if (user.getVerified()) {
             return false;
@@ -139,7 +139,7 @@ public class AuthService {
 
     public void forgotPassword(UpdateUserDto input) {
         User user = userRepo.findByEmail(input.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("If an account is associated with this email, an email will be sent to reset the password."));
+                .orElseThrow(() -> new IllegalArgumentException("Si un compte est associé à cet email, un email sera envoyé pour réinitialiser le mot de passe."));
 
         // 1 hour to milliseconds
         long expirationTime = TimeUnit.HOURS.toMillis(1);
@@ -168,17 +168,17 @@ public class AuthService {
 
     public void resetPassword(ResetPasswordDto input) {
         User user = userRepo.findByToken(input.getToken())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid or expired token"));
+                .orElseThrow(() -> new IllegalArgumentException("Token invalide our expiré"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 
         boolean isTokenValid = jwtService.isTokenValid(input.getToken(), userDetails);
         if (!isTokenValid) {
-            throw new IllegalArgumentException("Invalid or expired token");
+            throw new IllegalArgumentException("Token invalide our expiré");
         }
 
         if (passwordEncoder.matches(input.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("New password must be different than the old password");
+            throw new IllegalArgumentException("Le nouveau mot de passe doit être différent de l'ancien mot de passe");
         }
 
         user.setPassword(passwordEncoder.encode(input.getPassword()));

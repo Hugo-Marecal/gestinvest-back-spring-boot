@@ -46,10 +46,10 @@ public class AddLineService {
         double fees = Double.parseDouble(addLineDto.getFees());
 
         if (!isDateOk(addLineDto.getDate())) {
-            throw new IllegalArgumentException("Date is not valid");
+            throw new IllegalArgumentException("La date n'est pas valide");
         }
         UUID assetId = assetRepository.findAssetIdByName(addLineDto.getAsset_name())
-                .orElseThrow(() -> new IllegalArgumentException("Asset not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Actif non trouvé"));
 
         UUID portfolioId = portfolioRepository.findPortfolioIdById(userId);
 
@@ -69,19 +69,19 @@ public class AddLineService {
                         .orElse(null);
 
                 if (asset == null) {
-                    throw new IllegalArgumentException("This asset does not exist in your portfolio");
+                    throw new IllegalArgumentException("Cet actif n'existe pas dans votre portefeuille");
                 }
 
                 if (asset.getQuantity() < assetNumber) {
-                    throw new IllegalArgumentException("The quantity to be sold exceeds what you own");
+                    throw new IllegalArgumentException("La quantité à vendre dépasse ce que vous possédez");
                 }
 
                 if (assetNumber <= 0) {
-                    throw new IllegalArgumentException("Quantity should be greater than 0");
+                    throw new IllegalArgumentException("La quantité doit être supérieure à 0");
                 }
             }
         } else if (tradingOperationType.equalsIgnoreCase("sell")) {
-            throw new IllegalArgumentException("You can not sell, you don't have any lines");
+            throw new IllegalArgumentException("Vous ne pouvez pas vendre, vous n'avez encore pas de lignes");
         }
 
         InvestLine newData = new InvestLine();

@@ -34,7 +34,7 @@ public class AccountService {
     public UserDto updateAccountInfos(User user, UpdateUserDto input) {
 
         User userData = userRepo.findByEmail(user.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         if (userData.getFirst_name() == null || !userData.getFirst_name().equalsIgnoreCase(input.getFirst_name())) {
             userData.setFirst_name(input.getFirst_name());
@@ -53,11 +53,11 @@ public class AccountService {
         Optional<User> alreadyExistingUser = userRepo.findByEmail(input.getEmail());
 
         if (alreadyExistingUser.isPresent()) {
-            throw new IllegalArgumentException("Email already use");
+            throw new IllegalArgumentException("E-mail déjà utilisé");
         }
 
         User userData = userRepo.findByEmail(user.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         // 1 hour to milliseconds
         long expirationTime = TimeUnit.HOURS.toMillis(1);
@@ -80,7 +80,7 @@ public class AccountService {
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(email, subject, htmlMessage);
-            System.out.println("Email send");
+            System.out.println("Email envoyé");
         } catch (MessagingException e) {
             e.printStackTrace();
         }
@@ -89,18 +89,18 @@ public class AccountService {
     public boolean verify(String token) {
         String userNewEmail = jwtService.extractUsername(token);
         if (userNewEmail == null) {
-            throw new IllegalArgumentException("Invalid token");
+            throw new IllegalArgumentException("Invalide token");
         }
 
         User user = userRepo.findByToken(token)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         if (userNewEmail.equalsIgnoreCase(user.getEmail())) {
             return false;
         }
 
         if (!token.equalsIgnoreCase(user.getToken())) {
-            throw new IllegalArgumentException("Invalid token");
+            throw new IllegalArgumentException("Invalide token");
         }
 
         user.setEmail(userNewEmail);
@@ -111,15 +111,15 @@ public class AccountService {
 
     public void editPassword(User user, EditPasswordDto input) {
         if (!passwordEncoder.matches(input.getCurrentPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("Current password error");
+            throw new IllegalArgumentException("Erreur de mot de passe actuel");
         }
 
         if (passwordEncoder.matches(input.getNewPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("New password must be different");
+            throw new IllegalArgumentException("Le nouveau mot de passe doit être différent du mot de passe actuel");
         }
 
         User userData = userRepo.findByEmail(user.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         userData.setPassword(passwordEncoder.encode(input.getNewPassword()));
 
@@ -129,7 +129,7 @@ public class AccountService {
 
     public void deleteAccount(User user) {
         User userData = userRepo.findByEmail(user.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé"));
 
         userData.setFirst_name(null);
         userData.setLast_name(null);
