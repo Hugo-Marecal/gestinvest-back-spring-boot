@@ -2,6 +2,7 @@ package dev.gest.invest.services;
 
 import dev.gest.invest.dto.LoginUserDto;
 import dev.gest.invest.dto.RegisterUserDto;
+import dev.gest.invest.dto.UpdateUserDto;
 import dev.gest.invest.model.Portfolio;
 import dev.gest.invest.model.User;
 import dev.gest.invest.repository.PortfolioRepository;
@@ -15,8 +16,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 @Service
 public class AuthService {
+
+    @Value("${client.url}")
+    private String clientUrl;
 
     @Value("${api.url}")
     private String apiUrl;
@@ -51,7 +57,10 @@ public class AuthService {
         User alreadyExistingUser = userRepo.findByEmail(input.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("Email already use"));
 
-        String token = jwtService.generateToken(input.getEmail());
+        // 1 hour to milliseconds
+        long expirationTime = TimeUnit.HOURS.toMillis(1);
+
+        String token = jwtService.generateToken(input.getEmail(), expirationTime);
 
         User user = new User(input.getEmail(), passwordEncoder.encode(input.getPassword()), token);
 
@@ -125,5 +134,34 @@ public class AuthService {
         userRepo.save(user);
 
         return true;
+    }
+
+    public void forgotPassword(UpdateUserDto input) {
+        User user = userRepo.findByEmail(input.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("If an account is associated with this email, an email will be sent to reset the password."));
+
+        // 1 hour to milliseconds
+        long expirationTime = TimeUnit.HOURS.toMillis(1);
+
+        String token = jwtService.generateToken(input.getEmail(), expirationTime);
+
+        user.setToken(token);
+
+        User updatedUser = userRepo.save(user);
+
+        sendVerificationEmail(input.getEmail(), token);
+    }
+
+    public void sendVerificationEmail(String email, String token) {
+        String subject = "Reset password";
+        String htmlMessage = "<html><body>"
+                + "<a href=" + clientUrl + "\"/reset-password?token=" + token + "\">Click here to reset your password</a>"
+                + "</body></html>";
+        try {
+            emailService.sendVerificationEmail(email, subject, htmlMessage);
+            System.out.println("Email send");
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

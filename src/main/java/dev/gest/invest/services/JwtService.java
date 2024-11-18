@@ -12,7 +12,6 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 @Service
@@ -56,12 +55,12 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, long expirationTime) {
 
         Map<String, Object> claims = new HashMap<>();
 
         // 1 day to milliseconds
-        long expirationTime = TimeUnit.DAYS.toMillis(1);
+//        long expirationTime = TimeUnit.DAYS.toMillis(1);
 
         return Jwts.builder()
                 .claims()

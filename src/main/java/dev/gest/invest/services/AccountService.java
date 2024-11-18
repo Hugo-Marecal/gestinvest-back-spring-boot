@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AccountService {
@@ -58,7 +59,10 @@ public class AccountService {
         User userData = userRepo.findByEmail(user.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        String token = jwtService.generateToken(input.getEmail());
+        // 1 hour to milliseconds
+        long expirationTime = TimeUnit.HOURS.toMillis(1);
+
+        String token = jwtService.generateToken(input.getEmail(), expirationTime);
 
         userData.setToken(token);
 
