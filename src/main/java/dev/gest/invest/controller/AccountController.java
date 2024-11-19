@@ -39,7 +39,7 @@ public class AccountController {
     }
 
     @PatchMapping("/")
-    public ResponseEntity<UserDto> updateAccountInfos(@AuthenticationPrincipal User user, @RequestBody UpdateUserDto updateUserDto) {
+    public ResponseEntity<UserDto> updateAccountInfos(@AuthenticationPrincipal User user, @RequestBody @Valid UpdateUserDto updateUserDto) {
         UserDto updatedUser = accountService.updateAccountInfos(user, updateUserDto);
 
         return ResponseEntity.ok(updatedUser);
