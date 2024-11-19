@@ -76,7 +76,7 @@ public class AccountService {
     public void sendVerificationEmail(String email, String token) {
         String subject = "Email verification";
         String htmlMessage = "<html><body>"
-                + "<a href=" + apiUrl + "\"/api/account/verify-mail/" + token + "\">Click here to verify your new email</a>"
+                + "<a href=" + apiUrl + "/api/account/verify-mail/" + token + ">Click here to verify your new email</a>"
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(email, subject, htmlMessage);

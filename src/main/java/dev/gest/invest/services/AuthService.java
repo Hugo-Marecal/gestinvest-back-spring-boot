@@ -17,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -55,8 +56,11 @@ public class AuthService {
     }
 
     public User signup(RegisterUserDto input) {
-        User alreadyExistingUser = userRepo.findByEmail(input.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Email déjà utilisé"));
+        Optional<User> alreadyExistingUser = userRepo.findByEmail(input.getEmail());
+
+        if (alreadyExistingUser.isPresent()) {
+            throw new IllegalArgumentException("Email déjà utilisé");
+        }
 
         // 1 hour to milliseconds
         long expirationTime = TimeUnit.HOURS.toMillis(1);
@@ -100,7 +104,7 @@ public class AuthService {
     public void sendVerificationEmail(User user, String token) {
         String subject = "Account verification";
         String htmlMessage = "<html><body>"
-                + "<a href=" + apiUrl + "\"/api/auth/verify/" + token + "\">Click here to verify your email</a>"
+                + "<a href=" + apiUrl + "/api/auth/verify/" + token + ">Click here to verify your email</a>"
                 + "</body></html>";
         try {
             emailService.sendVerificationEmail(user.getEmail(), subject, htmlMessage);
